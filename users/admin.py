@@ -8,6 +8,7 @@ class UserAdmin(admin.ModelAdmin):
         "full_name",
         "email",
         "is_staff",
+        "is_active",
         "date_joined",
         "last_modified_date",
     )

@@ -1,9 +1,22 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
+from forms.models import Form
+
+User = get_user_model()
 
 
 class Subscriber(models.Model):
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    form = models.ForeignKey(
+        Form,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="subscribers",
+    )
+    verified = models.BooleanField(default=False)
     created_date = models.DateTimeField(default=timezone.now)
     last_modified_date = models.DateTimeField(default=timezone.now)
 

@@ -1,7 +1,7 @@
 from django.db import models
 from workspace.models import Workspace
 from django.utils import timezone
-from subscribers.models import Subscriber
+import uuid
 
 
 class Form(models.Model):
@@ -9,7 +9,8 @@ class Form(models.Model):
     workspace = models.ForeignKey(
         Workspace, on_delete=models.CASCADE, related_name="forms"
     )
-    subscriber = models.ManyToManyField(Subscriber, blank=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    alerts = models.BooleanField(default=False)
     created_date = models.DateTimeField(default=timezone.now)
     last_modified_date = models.DateTimeField(default=timezone.now)
 

@@ -14,6 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.db.models.fields import related
 from django.urls import path, include
+from forms.views import dummy_form, SubmissionCreation
 
-urlpatterns = [path("admin/", admin.site.urls), path("api/", include("api.urls"))]
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/", include("api.urls")),
+    path("forms/", dummy_form),
+    path("f/<uuid:uuid>/", SubmissionCreation.as_view(), name="create-submission"),
+]

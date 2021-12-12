@@ -10,4 +10,4 @@ User = get_user_model()
 def handler(sender, created, instance, *args, **kwargs):
     if created:
         email = instance.email
-        s, created = Subscriber.objects.get_or_create(email=email)
+        s = Subscriber.objects.get_or_create(email=email, user=instance)
