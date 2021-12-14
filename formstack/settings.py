@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Third party Apps
     "rest_framework",
+    "rest_framework_simplejwt",
     "corsheaders",
     # Custom Apps
     "users.apps.UsersConfig",
@@ -89,7 +90,16 @@ DATABASES = {
 REST_FRAMEWORK = {
     "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
-    ]
+    ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
 }
 
 # Password validation
@@ -130,11 +140,16 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 AUTH_USER_MODEL = "users.User"
-CORS_ALLOW_ALL_ORIGINS: True
-
+CORS_ALLOW_ALL_ORIGINS: False
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = (
+    "https://127.0.0.1:3000",
+    "https://127.0.0.1:8000",
+)
 # EMAIL CONFIGURATIONS
 EMAIL_HOST = env("EMAIL_HOST")
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = env("EMAIL_USE_TLS")
 EMAIL_PORT = env("EMAIL_PORT")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")

@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.db.models.fields import related
 from django.urls import path, include
 from forms.views import dummy_form, SubmissionCreation
+from users.views import activate_user
 
 
 urlpatterns = [
@@ -24,4 +25,9 @@ urlpatterns = [
     path("api/", include("api.urls")),
     path("forms/", dummy_form),
     path("f/<uuid:uuid>/", SubmissionCreation.as_view(), name="create-submission"),
+    path(
+        r"^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$",
+        activate_user,
+        name="activate",
+    ),
 ]
