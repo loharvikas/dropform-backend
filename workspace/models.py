@@ -7,6 +7,7 @@ User = get_user_model()
 
 class Workspace(models.Model):
     name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="workspaces")
     created_date = models.DateTimeField(default=timezone.now)
     last_modified_date = models.DateTimeField(default=timezone.now)

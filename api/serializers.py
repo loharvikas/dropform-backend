@@ -28,15 +28,15 @@ class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=False)
     password = serializers.CharField(required=False, write_only=True)
     full_name = serializers.CharField(required=False, max_length=255)
-    workspaces = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = User
         fields = [
             "id",
             "email",
+            "full_name",
             "password",
-            "full_name" "is_active",
+            "is_active",
             "date_joined",
             "last_modified_date",
         ]
@@ -123,10 +123,11 @@ class SubscriberSerializer(serializers.ModelSerializer):
 
 
 class FormSerializer(serializers.ModelSerializer):
-    submissions = SubmissionSerializer(many=True, read_only=True)
-    subscribers = SubmissionSerializer(many=True, read_only=True)
-
     class Meta:
         model = Form
         fields = "__all__"
         # depth = 1
+
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
