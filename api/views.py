@@ -1,54 +1,27 @@
+import threading
 from django.contrib.auth import get_user_model
-from django.db.models.query import QuerySet
-from rest_framework import response
+from django.contrib.sites.shortcuts import get_current_site
+
 from rest_framework.response import Response
-from rest_framework.serializers import Serializer
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
-from forms.models import Form, Submission
-from subscribers.models import Subscriber
-from workspace.models import Workspace
-from . import serializers
 from rest_framework import generics
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework import status
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth.models import User
 
-import api
+from form.models import Form
+from submission.models import Submission
+from subscriber.models import Subscriber
+from user.email import send_activation_email
+from workspace.models import Workspace
+
+
+from . import serializers
+
 
 User = get_user_model()
-
-
-class LoginAPIView(TokenObtainPairView):
-    serializer_class = serializers.LoginSerializer
-    permission_class = (AllowAny,)
-
-
-class RegisterAPIView(APIView):
-    permission_classes = (AllowAny,)
-
-    def post(self, request, *args, **kwargs):
-        serializer = serializers.RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            refresh = RefreshToken.for_user(user)
-            res = {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-            }
-
-            return Response(
-                {
-                    "user": serializer.data,
-                    "refresh": res["refresh"],
-                    "access": res["access"],
-                },
-                status=status.HTTP_201_CREATED,
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class WorkspaceListAPIView(generics.ListCreateAPIView):
@@ -121,16 +94,56 @@ class SubscriberListAPIView(generics.ListCreateAPIView):
     serializer_class = serializers.SubscriberSerializer
 
 
+class LoginAPIView(TokenObtainPairView):
+    serializer_class = serializers.LoginSerializer
+    permission_class = (AllowAny,)
+
+
+class RegisterAPIView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        serializer = serializers.RegisterSerializer(
+            data=request.data, context={"request": request}
+        )
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            res = {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
+
+            return Response(
+                {
+                    "user": serializer.data,
+                    "refresh": res["refresh"],
+                    "access": res["access"],
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 # Endpoint: /users/
 class UserListAPIView(generics.ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = serializers.UserSerializer
     model = User
 
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer_class(
+            data=request.data, context={"request": request}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+
 
 # Endpoint: /users/pk/
 class UserDetailAPIView(generics.RetrieveAPIView):
-    model = User
+    queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
 
 
@@ -138,6 +151,23 @@ class UserDetailAPIView(generics.RetrieveAPIView):
 class UserUpdateAPIView(generics.UpdateAPIView):
     queryset = User.objects.filter(is_staff=False)
     serializer_class = serializers.UserSerializer
+
+
+class ActivateEmailAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        current_site = get_current_site(request)
+        if request.user.is_verified == True:
+            t = threading.Thread(
+                target=send_activation_email,
+                args=(current_site.domain, request.user.pk),
+            )
+            t.start()
+            return Response(
+                {"message": "email sent successfully"}, status=status.HTTP_200_OK
+            )
+        return Response(
+            {"message": "User already verified"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class PasswordChangeAPIView(generics.UpdateAPIView):
