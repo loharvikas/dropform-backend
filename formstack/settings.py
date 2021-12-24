@@ -31,15 +31,17 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Custom Apps
+    "user.apps.UserConfig",
+    "form.apps.FormConfig",
+    "subscriber.apps.SubscriberConfig",
+    "workspace.apps.WorkspaceConfig",
+    "submission.apps.SubmissionConfig",
     # Third party Apps
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
-    # Custom Apps
-    "users.apps.UsersConfig",
-    "forms.apps.FormsConfig",
-    "subscribers.apps.SubscribersConfig",
-    "workspace.apps.WorkspaceConfig",
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -72,6 +74,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "formstack.wsgi.application"
+ASGI_APPLICATION = "formstack.asgi.application"
+
+CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
 
 # Database
@@ -163,7 +168,7 @@ SIMPLE_JWT = {
 }
 
 STATIC_URL = "/static/"
-AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "user.User"
 CORS_ALLOW_ALL_ORIGINS: False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]

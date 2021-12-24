@@ -10,19 +10,17 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('user', '0001_initial'),
+        ('form', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Workspace',
+            name='Submission',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.TextField(blank=True, null=True)),
+                ('fields', models.JSONField(null=True)),
                 ('created_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('last_modified_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='workspaces', to='user.user')),
+                ('form', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='submissions', to='form.form')),
             ],
         ),
     ]
