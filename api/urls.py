@@ -6,9 +6,11 @@ from .views import (
     ActivateEmailAPIView,
     FormDetailAPIView,
     FormWorkspaceAPIView,
+    GoogleLoginAPIView,
     LoginAPIView,
     PasswordChangeAPIView,
     RegisterAPIView,
+    SubmissionDetailAPIView,
     SubmissionListAPIView,
     SubscriberListAPIView,
     SubmissionFormAPIView,
@@ -29,6 +31,11 @@ urlpatterns = [
     path("forms/detail/<uuid:uuid>/", FormDetailAPIView.as_view(), name="form-detail"),
     path("f/<uuid:uuid>/", SubmissionFormAPIView.as_view(), name="create-submission"),
     path("submissions/", SubmissionListAPIView.as_view(), name="submission"),
+    path(
+        "submissions/<int:pk>/",
+        SubmissionDetailAPIView.as_view(),
+        name="submission-delete",
+    ),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("workspace/", WorkspaceListAPIView.as_view(), name="workspace"),
     path(
@@ -54,4 +61,5 @@ urlpatterns = [
     ),
     path("login/", LoginAPIView.as_view(), name="user-login"),
     path("register/", RegisterAPIView.as_view(), name="user-register"),
+    path("google/", GoogleLoginAPIView.as_view(), name="google-login"),
 ]

@@ -77,7 +77,30 @@ class RegisterSerializer(UserSerializer):
             user = User.objects.create_user(**validated_data)
             requestObject = self.context.get("request")
             if requestObject:
-                print("HELLO")
+                current_site = get_current_site(requestObject)
+                t = threading.Thread(
+                    target=send_activation_email, args=(current_site.domain, user.pk)
+                )
+                t.start()
+        return user
+
+
+class GoogleAuthenticationSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(max_length=255, required=True)
+    password = serializers.CharField(max_length=255, required=False, write_only=True)
+    email = serializers.EmailField(max_length=255, required=True)
+
+    class Meta:
+        model = User
+        fields = "__all__"
+
+    def create(self, validated_data):
+        try:
+            user = User.objects.get(email=validated_data["email"])
+        except ObjectDoesNotExist:
+            user = User.objects.create_user(**validated_data)
+            requestObject = self.context.get("request")
+            if requestObject:
                 current_site = get_current_site(requestObject)
                 t = threading.Thread(
                     target=send_activation_email, args=(current_site.domain, user.pk)

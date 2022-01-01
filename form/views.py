@@ -6,10 +6,11 @@ from .models import Form
 from submission.models import Submission
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.response import Response
+from rest_framework import generics
 
 
-def dummy_form(request):
-    return render(request, "form/form.html")
+from pprint import pprint
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -21,6 +22,6 @@ class SubmissionCreation(View):
             uuid = kwargs.get("uuid")
             form = Form.objects.get(uuid=uuid)
             Submission.objects.create(form=form, fields=fields)
-            return HttpResponse("Done")
+            return render(request, "general/redirect.html")
         except ObjectDoesNotExist:
             HttpResponse("Error")

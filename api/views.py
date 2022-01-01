@@ -1,3 +1,4 @@
+from re import sub
 import threading
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
@@ -10,6 +11,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.pagination import PageNumberPagination
 
 from form.models import Form
 from submission.models import Submission
@@ -62,8 +64,18 @@ class FormDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "uuid"
 
 
-class SubmissionFormAPIView(APIView):
+class CustomPagination(PageNumberPagination):
+    page_size = 2
+    page_size_query_param = "page_size"
+    max_page_size = 50
+    page_query_param = "p"
+
+
+class SubmissionFormAPIView(generics.ListAPIView):
+    queryset = Submission.objects.all()
+    serializer_class = serializers.SubmissionSerializer
     parser_classes = [FormParser, MultiPartParser]
+    pagination_class = PageNumberPagination
 
     def post(self, request, *args, **kwargs):
         qd = request.data
@@ -77,16 +89,30 @@ class SubmissionFormAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, uuid, *args, **kwargs):
-        qs = Submission.objects.all().filter(form__uuid=uuid).order_by("-created_date")
-        serializer = serializers.SubmissionSerializer(qs, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        qs = (
+            Submission.objects.all()
+            .filter(form__uuid=self.kwargs["uuid"])
+            .order_by("-created_date")
+        )
+        return qs
 
 
-class SubmissionListAPIView(generics.ListAPIView):
+class SubmissionListAPIView(generics.GenericAPIView):
     parser_classes = [FormParser, MultiPartParser]
     queryset = Submission.objects.all()
     serializer_class = serializers.SubmissionSerializer
+
+
+class SubmissionDetailAPIView(generics.DestroyAPIView):
+    queryset = Submission.objects.all()
+    serializer_class = serializers.SubmissionSerializer
+
+    def delete(self, request, *args, **kwargs):
+        data = request.data["rowIds"]
+        submissionObject = Submission.objects.filter(pk__in=data)
+        submissionObject.delete()
+        return Response({"message": "Successfully deleted"}, status=status.HTTP_200_OK)
 
 
 class SubscriberListAPIView(generics.ListCreateAPIView):
@@ -99,8 +125,33 @@ class LoginAPIView(TokenObtainPairView):
     permission_class = (AllowAny,)
 
 
+class GoogleLoginAPIView(APIView):
+    permission_classes = (AllowAny,)
+    authentication_classes = []
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        print("DATA:", data)
+
+        serializer = serializers.GoogleAuthenticationSerializer(data=data)
+        print("DONE")
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            return Response(
+                {
+                    "user": serializer.data,
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class RegisterAPIView(APIView):
     permission_classes = (AllowAny,)
+    authentication_classes = []
 
     def post(self, request, *args, **kwargs):
         serializer = serializers.RegisterSerializer(
