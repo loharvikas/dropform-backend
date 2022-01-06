@@ -16,3 +16,13 @@ class Submission(models.Model):
 
     def __str__(self):
         return f"{self.form.name} || {self.pk}"
+
+
+class SubmissionFileUpload(models.Model):
+    file_field = models.FileField(blank=True, null=True)
+    submission = models.ForeignKey(
+        Submission, on_delete=models.CASCADE, related_name="files"
+    )
+
+    def __str__(self):
+        return self.submission.form.name

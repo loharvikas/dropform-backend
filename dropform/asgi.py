@@ -6,7 +6,7 @@ from django.core.asgi import get_asgi_application
 import submission.routing
 
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "formstack.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dropform.settings")
 
 application = ProtocolTypeRouter(
     {

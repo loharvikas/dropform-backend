@@ -7,12 +7,13 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from user.email import send_activation_email
+from helper.emails import send_activation_email
 
 from workspace.models import Workspace
 from form.models import Form
 from subscriber.models import Subscriber
-from submission.models import Submission
+from submission.models import Submission, SubmissionFileUpload
+from helper import constants
 
 import threading
 
@@ -45,7 +46,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(UserSerializer):
     full_name = serializers.CharField(max_length=255, required=True)
-    password = serializers.CharField(max_length=255, required=True, write_only=True)
+    password = serializers.CharField(
+        max_length=255, required=True, write_only=True)
     email = serializers.EmailField(
         max_length=255,
         required=True,
@@ -79,7 +81,8 @@ class RegisterSerializer(UserSerializer):
             if requestObject:
                 current_site = get_current_site(requestObject)
                 t = threading.Thread(
-                    target=send_activation_email, args=(current_site.domain, user.pk)
+                    target=send_activation_email, args=(
+                        current_site.domain, user.pk)
                 )
                 t.start()
         return user
@@ -87,7 +90,8 @@ class RegisterSerializer(UserSerializer):
 
 class GoogleAuthenticationSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(max_length=255, required=True)
-    password = serializers.CharField(max_length=255, required=False, write_only=True)
+    password = serializers.CharField(
+        max_length=255, required=False, write_only=True)
     email = serializers.EmailField(max_length=255, required=True)
 
     class Meta:
@@ -103,7 +107,8 @@ class GoogleAuthenticationSerializer(serializers.ModelSerializer):
             if requestObject:
                 current_site = get_current_site(requestObject)
                 t = threading.Thread(
-                    target=send_activation_email, args=(current_site.domain, user.pk)
+                    target=send_activation_email, args=(
+                        current_site.domain, user.pk)
                 )
                 t.start()
         return user
@@ -133,19 +138,25 @@ class WorkspaceSerializer(serializers.ModelSerializer):
         model = Workspace
         fields = "__all__"
 
-    def create(self, validated_data):
-        return Workspace.objects.create(**validated_data)
+
+class SubmissionFileUploadSerializer(serializers.ModelSerializer):
+    file_field = serializers.FileField(required=False)
+
+    class Meta:
+        model = SubmissionFileUpload
+        fields = "__all__"
 
 
 class SubmissionSerializer(serializers.ModelSerializer):
     fields = serializers.JSONField(required=False)
+    files = SubmissionFileUploadSerializer(many=True, required=False)
 
     class Meta:
         model = Submission
         fields = "__all__"
 
     def create(self, validated_data):
-        print(validated_data)
+        print("VALIDATED_DATA", validated_data)
         return Submission.objects.create(**validated_data)
 
 

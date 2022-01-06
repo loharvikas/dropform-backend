@@ -1,6 +1,5 @@
 import os
 import environ
-import psycopg2
 from datetime import timedelta
 
 env = environ.Env()
@@ -28,7 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Custom Apps
+    # Local Apps
     "user.apps.UserConfig",
     "form.apps.FormConfig",
     "subscriber.apps.SubscriberConfig",
@@ -52,7 +51,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "formstack.urls"
+ROOT_URLCONF = "dropform.urls"
 
 TEMPLATES = [
     {
@@ -70,10 +69,11 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "formstack.wsgi.application"
-ASGI_APPLICATION = "formstack.asgi.application"
+WSGI_APPLICATION = "dropform.wsgi.application"
+ASGI_APPLICATION = "dropform.asgi.application"
 
-CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+CHANNEL_LAYERS = {"default": {
+    "BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
 
 # Database
@@ -104,7 +104,7 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 3,
+    "PAGE_SIZE": 50,
 }
 
 # Password validation
@@ -139,7 +139,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+# SIMPLE JWT
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=90),
@@ -166,14 +166,41 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
 
-STATIC_URL = "/static/"
+# AWS S3 CONFIGURATIONS
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_CUSTOM_DOMAIN = "%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": "max-age=86400",
+}
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": "max-age=86400",
+}
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_VERIFY = True
+AWS_LOCATION = "static"
+
+DEFAULT_FILE_STORAGE = "dropform.storage_backends.MediaStorage"
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
+
+# MEDIA
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+
+
+# USER
 AUTH_USER_MODEL = "user.User"
+
+# CORS CONFIGURATIONS
 CORS_ALLOW_ALL_ORIGINS: True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
-    "https://accounts.google.com",
 ]
 
 # EMAIL CONFIGURATIONS
@@ -184,6 +211,9 @@ EMAIL_USE_TLS = env("EMAIL_USE_TLS")
 EMAIL_PORT = env("EMAIL_PORT")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 
-
-BASE_BACKEND_URL = "http://localhost:8000/"
-BASE_FRONTEND_URL = "http://localhost:3000"
+# STRIPE CONFIGURATIONS
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
+STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
+STRIPE_PRODUCT_STANDARD_ID = env('STRIPE_PRODUCT_STANDARD_ID')
+STRIPE_PRODUCT_PRO_ID = env('STRIPE_PRODUCT_PRO_ID')
+STRIPE_PRODUCT_BUSINESS_ID = env('STRIPE_PRODUCT_BUSINESS_ID')

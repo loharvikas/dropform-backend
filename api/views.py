@@ -1,9 +1,10 @@
-from re import sub
-import threading
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 
+import threading
+
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
@@ -16,8 +17,9 @@ from rest_framework.pagination import PageNumberPagination
 from form.models import Form
 from submission.models import Submission
 from subscriber.models import Subscriber
-from user.email import send_activation_email
 from workspace.models import Workspace
+from helper.emails import send_activation_email
+from helper import constants
 
 
 from . import serializers
@@ -28,7 +30,25 @@ User = get_user_model()
 
 class WorkspaceListAPIView(generics.ListCreateAPIView):
     queryset = Workspace.objects.all()
-    serializer_class = serializers.WorkspaceSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = serializers.WorkspaceSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data.get("user", None)
+            if user:
+                account_limitaions = constants.ACCOUNT_LIMITATIONS[
+                    user.account_type.capitalize()
+                ]
+                if account_limitaions["total_workspaces"] < user.total_workspaces:
+                    return Response(
+                        {
+                            "message": "Workspace limit exceeded please upgrade your account!"
+                        },
+                        status=status.HTTP_402_PAYMENT_REQUIRED,
+                    )
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class WorkspaceUserListAPIView(APIView):
@@ -47,10 +67,26 @@ class FormListAPIView(generics.ListCreateAPIView):
     queryset = Form.objects.all()
     serializer_class = serializers.FormSerializer
 
+    def post(request, *args, **kwargs):
+        serializer = serializers.FormSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data.get("user", None)
+            if user:
+                account_limitations = constants.ACCOUNT_LIMITATIONS[
+                    user.account_type.capitalize()
+                ]
+                if account_limitations["total_forms"] < user.total_forms:
+                    return Response(
+                        {"message": "Form limit exceeded please upgrade your account!"},
+                        status=status.HTTP_402_PAYMENT_REQUIRED,
+                    )
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class FormWorkspaceAPIView(APIView):
     queryset = Form.objects.all()
-    serializer_class = serializers.FormSerializer
 
     def get(self, request, pk, *args, **kwargs):
         qs = Form.objects.all().filter(workspace__id=pk).order_by("-created_date")
@@ -207,7 +243,10 @@ class UserUpdateAPIView(generics.UpdateAPIView):
 class ActivateEmailAPIView(APIView):
     def post(self, request, *args, **kwargs):
         current_site = get_current_site(request)
-        if request.user.is_verified == True:
+        print("USER:", request.user)
+        print("VERIF", request.user.is_verified)
+        if request.user.is_verified == False:
+            print("HELLO")
             t = threading.Thread(
                 target=send_activation_email,
                 args=(current_site.domain, request.user.pk),
