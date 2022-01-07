@@ -1,0 +1,107 @@
+Date : 2021-12-20 21:45:59
+Directory : /Users/vikaslohar/Desktop/formstack-backend
+Total : 65 files,  988 codes, 82 comments, 339 blanks, all 1409 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| Python           |         62 |        939 |         82 |        338 |      1,359 |
+| Django Template  |          2 |         31 |          0 |          0 |         31 |
+| pip requirements |          1 |         18 |          0 |          1 |         19 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                            | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                               |         65 |        988 |         82 |        339 |      1,409 |
+| api                                                                                             |          9 |        279 |         10 |         88 |        377 |
+| api/migrations                                                                                  |          1 |          0 |          0 |          1 |          1 |
+| forms                                                                                           |         14 |        185 |          8 |         66 |        259 |
+| forms/migrations                                                                                |          7 |         91 |          6 |         39 |        136 |
+| forms/templates                                                                                 |          1 |         26 |          0 |          0 |         26 |
+| forms/templates/forms                                                                           |          1 |         26 |          0 |          0 |         26 |
+| formstack                                                                                       |          5 |        155 |         47 |         44 |        246 |
+| helper                                                                                          |          1 |         10 |          0 |          5 |         15 |
+| subscribers                                                                                     |          9 |         67 |          5 |         31 |        103 |
+| subscribers/migrations                                                                          |          3 |         35 |          2 |         14 |         51 |
+| templates                                                                                       |          1 |          5 |          0 |          0 |          5 |
+| templates/authentication                                                                        |          1 |          5 |          0 |          0 |          5 |
+| users                                                                                           |         15 |        198 |          6 |         69 |        273 |
+| users/migrations                                                                                |          5 |         65 |          4 |         26 |         95 |
+| workspace                                                                                       |          9 |         56 |          4 |         30 |         90 |
+| workspace/migrations                                                                            |          3 |         32 |          2 |         14 |         48 |
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                                                        | language         | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| /Users/vikaslohar/Desktop/formstack-backend/api/__init__.py                                     | Python           |          0 |          0 |          1 |          1 |
+| /Users/vikaslohar/Desktop/formstack-backend/api/admin.py                                        | Python           |          1 |          1 |          2 |          4 |
+| /Users/vikaslohar/Desktop/formstack-backend/api/apps.py                                         | Python           |          4 |          0 |          3 |          7 |
+| /Users/vikaslohar/Desktop/formstack-backend/api/migrations/__init__.py                          | Python           |          0 |          0 |          1 |          1 |
+| /Users/vikaslohar/Desktop/formstack-backend/api/models.py                                       | Python           |          1 |          1 |          2 |          4 |
+| /Users/vikaslohar/Desktop/formstack-backend/api/serializers.py                                  | Python           |         98 |          4 |         32 |        134 |
+| /Users/vikaslohar/Desktop/formstack-backend/api/tests.py                                        | Python           |          1 |          1 |          2 |          4 |
+| /Users/vikaslohar/Desktop/formstack-backend/api/urls.py                                         | Python           |         47 |          0 |          4 |         51 |
+| /Users/vikaslohar/Desktop/formstack-backend/api/views.py                                        | Python           |        127 |          3 |         41 |        171 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/__init__.py                                   | Python           |          0 |          0 |          1 |          1 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/admin.py                                      | Python           |         10 |          1 |          8 |         19 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/apps.py                                       | Python           |          4 |          0 |          3 |          7 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/migrations/0001_initial.py                    | Python           |         27 |          1 |          7 |         35 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/migrations/0002_initial.py                    | Python           |         15 |          1 |          7 |         23 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/migrations/0003_form_uuid.py                  | Python           |         13 |          1 |          6 |         20 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/migrations/0004_form_alerts.py                | Python           |         12 |          1 |          6 |         19 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/migrations/0005_form_active.py                | Python           |         12 |          1 |          6 |         19 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/migrations/0006_form_description.py           | Python           |         12 |          1 |          6 |         19 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/migrations/__init__.py                        | Python           |          0 |          0 |          1 |          1 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/models.py                                     | Python           |         32 |          0 |          8 |         40 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/templates/forms/form.html                     | Django Template  |         26 |          0 |          0 |         26 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/tests.py                                      | Python           |          1 |          1 |          2 |          4 |
+| /Users/vikaslohar/Desktop/formstack-backend/forms/views.py                                      | Python           |         21 |          0 |          5 |         26 |
+| /Users/vikaslohar/Desktop/formstack-backend/formstack/__init__.py                               | Python           |          0 |          0 |          1 |          1 |
+| /Users/vikaslohar/Desktop/formstack-backend/formstack/asgi.py                                   | Python           |          4 |          8 |          5 |         17 |
+| /Users/vikaslohar/Desktop/formstack-backend/formstack/settings.py                               | Python           |        131 |         16 |         30 |        177 |
+| /Users/vikaslohar/Desktop/formstack-backend/formstack/urls.py                                   | Python           |         16 |         15 |          3 |         34 |
+| /Users/vikaslohar/Desktop/formstack-backend/formstack/wsgi.py                                   | Python           |          4 |          8 |          5 |         17 |
+| /Users/vikaslohar/Desktop/formstack-backend/helper/utils.py                                     | Python           |         10 |          0 |          5 |         15 |
+| /Users/vikaslohar/Desktop/formstack-backend/manage.py                                           | Python           |         15 |          2 |          5 |         22 |
+| /Users/vikaslohar/Desktop/formstack-backend/requirements.txt                                    | pip requirements |         18 |          0 |          1 |         19 |
+| /Users/vikaslohar/Desktop/formstack-backend/subscribers/__init__.py                             | Python           |          0 |          0 |          1 |          1 |
+| /Users/vikaslohar/Desktop/formstack-backend/subscribers/admin.py                                | Python           |          3 |          1 |          3 |          7 |
+| /Users/vikaslohar/Desktop/formstack-backend/subscribers/apps.py                                 | Python           |          4 |          0 |          3 |          7 |
+| /Users/vikaslohar/Desktop/formstack-backend/subscribers/migrations/0001_initial.py              | Python           |         21 |          1 |          7 |         29 |
+| /Users/vikaslohar/Desktop/formstack-backend/subscribers/migrations/0002_subscriber_user.py      | Python           |         14 |          1 |          6 |         21 |
+| /Users/vikaslohar/Desktop/formstack-backend/subscribers/migrations/__init__.py                  | Python           |          0 |          0 |          1 |          1 |
+| /Users/vikaslohar/Desktop/formstack-backend/subscribers/models.py                               | Python           |         23 |          0 |          6 |         29 |
+| /Users/vikaslohar/Desktop/formstack-backend/subscribers/tests.py                                | Python           |          1 |          1 |          2 |          4 |
+| /Users/vikaslohar/Desktop/formstack-backend/subscribers/views.py                                | Python           |          1 |          1 |          2 |          4 |
+| /Users/vikaslohar/Desktop/formstack-backend/templates/authentication/user_activation_email.html | Django Template  |          5 |          0 |          0 |          5 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/__init__.py                                   | Python           |          0 |          0 |          1 |          1 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/admin.py                                      | Python           |         23 |          0 |          5 |         28 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/apps.py                                       | Python           |          6 |          0 |          4 |         10 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/email.py                                      | Python           |         32 |          0 |          5 |         37 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/managers.py                                   | Python           |         20 |          0 |          7 |         27 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/migrations/0001_initial.py                    | Python           |         30 |          1 |          7 |         38 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/migrations/0002_remove_user_verified.py       | Python           |         11 |          1 |          6 |         18 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/migrations/0003_alter_user_is_active.py       | Python           |         12 |          1 |          6 |         19 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/migrations/0004_alter_user_is_active.py       | Python           |         12 |          1 |          6 |         19 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/migrations/__init__.py                        | Python           |          0 |          0 |          1 |          1 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/models.py                                     | Python           |         21 |          0 |         10 |         31 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/serializers.py                                | Python           |          0 |          0 |          1 |          1 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/signals.py                                    | Python           |         10 |          0 |          4 |         14 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/tests.py                                      | Python           |          1 |          1 |          2 |          4 |
+| /Users/vikaslohar/Desktop/formstack-backend/users/views.py                                      | Python           |         20 |          1 |          4 |         25 |
+| /Users/vikaslohar/Desktop/formstack-backend/workspace/__init__.py                               | Python           |          0 |          0 |          1 |          1 |
+| /Users/vikaslohar/Desktop/formstack-backend/workspace/admin.py                                  | Python           |          3 |          0 |          2 |          5 |
+| /Users/vikaslohar/Desktop/formstack-backend/workspace/apps.py                                   | Python           |          4 |          0 |          3 |          7 |
+| /Users/vikaslohar/Desktop/formstack-backend/workspace/migrations/0001_initial.py                | Python           |         20 |          1 |          7 |         28 |
+| /Users/vikaslohar/Desktop/formstack-backend/workspace/migrations/0002_workspace_description.py  | Python           |         12 |          1 |          6 |         19 |
+| /Users/vikaslohar/Desktop/formstack-backend/workspace/migrations/__init__.py                    | Python           |          0 |          0 |          1 |          1 |
+| /Users/vikaslohar/Desktop/formstack-backend/workspace/models.py                                 | Python           |         15 |          0 |          6 |         21 |
+| /Users/vikaslohar/Desktop/formstack-backend/workspace/tests.py                                  | Python           |          1 |          1 |          2 |          4 |
+| /Users/vikaslohar/Desktop/formstack-backend/workspace/views.py                                  | Python           |          1 |          1 |          2 |          4 |
+| Total                                                                                           |                  |        988 |         82 |        339 |      1,409 |
++-------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
