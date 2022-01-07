@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 
-import threading
 
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
@@ -18,8 +17,8 @@ from form.models import Form
 from submission.models import Submission
 from subscriber.models import Subscriber
 from workspace.models import Workspace
-from helper.emails import send_activation_email
 from helper import constants
+from user.tasks import send_activation_email_task
 
 
 from . import serializers
@@ -243,15 +242,9 @@ class UserUpdateAPIView(generics.UpdateAPIView):
 class ActivateEmailAPIView(APIView):
     def post(self, request, *args, **kwargs):
         current_site = get_current_site(request)
-        print("USER:", request.user)
-        print("VERIF", request.user.is_verified)
         if request.user.is_verified == False:
-            print("HELLO")
-            t = threading.Thread(
-                target=send_activation_email,
-                args=(current_site.domain, request.user.pk),
-            )
-            t.start()
+            send_activation_email_task.delay(
+                current_site.domain, request.user.pk)
             return Response(
                 {"message": "email sent successfully"}, status=status.HTTP_200_OK
             )

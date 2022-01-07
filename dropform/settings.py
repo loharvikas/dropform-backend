@@ -1,6 +1,7 @@
 import os
 import environ
 from datetime import timedelta
+from celery.schedules import crontab
 
 env = environ.Env()
 # reading .env file
@@ -15,7 +16,7 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -198,10 +199,11 @@ AUTH_USER_MODEL = "user.User"
 # CORS CONFIGURATIONS
 CORS_ALLOW_ALL_ORIGINS: True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://127.0.0.1:3000",
+#     "http://localhost:3000",
+
+# ]
 
 # EMAIL CONFIGURATIONS
 EMAIL_HOST = env("EMAIL_HOST")
@@ -210,6 +212,20 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = env("EMAIL_USE_TLS")
 EMAIL_PORT = env("EMAIL_PORT")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+
+# CELERY CONFIGURATIONS
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'
+CELERY_BEAT_SCHEDULE = {
+    'change_user_rotation_date': {
+        "task": "user.tasks.change_rotation_date_task",
+        "schedule": crontab(minute=0, hour=0)
+    }
+}
 
 # STRIPE CONFIGURATIONS
 STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')

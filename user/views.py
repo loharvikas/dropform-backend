@@ -86,36 +86,31 @@ class CreateCustomerPortalView(View):
 
 
 # WEBHOOKS
-
+@method_decorator(csrf_exempt, name='dispatch')
 class CheckoutWebhookView(View):
     def post(self, request, *args, **kwargs):
-        webhook_secret = 'whsec_Shm8Swr3TzZoEDak4KSFO6NcbiqPVM2W'
-        request_data = json.loads(request.data)
+        endpoint_secret = 'we_1KEwwoSBvjL8IfZ6fhDJyrAi'
+        payload = request.body
+        sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+        event = None
+        print('PAYLOAD::', payload.decode('utf-8'))
+        try:
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, endpoint_secret)
+        except ValueError as e:
+            print('INVALID PAYLOAD')
+            # Invalid payload
+            return HttpResponse(status=400)
+        except stripe.error.SignatureVerificationError as e:
+            print('INVALID SIG')
+            # Invalid signature
+            return HttpResponse(status=400)
 
-        if webhook_secret:
-            # Retrieve the event by verifying the signature using the raw body and secret if webhook signing is configured.
-            signature = request.headers.get('stripe-signature')
-            try:
-                event = stripe.Webhook.construct_event(
-                    payload=request.data, sig_header=signature, secret=webhook_secret)
-                data = event['data']
-            except Exception as e:
-                return e
-            # Get the type of webhook event sent - used to check the status of PaymentIntents.
-            event_type = event['type']
+        if event.type == 'checkout.session.completed':
+            print('Checkout success PaymentIntent was successful!')
+        elif event.type == 'invoice.paid':
+            print('Invoice Failed was attached to a Customer!')
         else:
-            data = request_data['data']
-            event_type = request_data['type']
-        data_object = data['object']
-        if event_type == 'checkout.session.completed':
-            print('SUCCESSL:', data)
-        elif event_type == 'invoice.paid':
-            print('INVOICES:')
-            print(data)
-        elif event_type == 'invoice.payment_failed':
-            print('FAILDED:',)
-            print(data)
-        else:
-            print('Unhandled event type {}'.format(event_type))
+            print('Unhandled event type {}'.format(event.type))
 
-        return JsonResponse({'status': 'success'})
+        return HttpResponse(status=200)

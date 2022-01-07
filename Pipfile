@@ -51,6 +51,7 @@ pyOpenSSL = "==21.0.0"
 Twisted = "==21.7.0"
 stripe = "*"
 celery = "*"
+redis = "*"
 
 [dev-packages]
 

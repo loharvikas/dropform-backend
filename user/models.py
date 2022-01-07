@@ -31,6 +31,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     date_joined = models.DateTimeField(default=timezone.now)
     last_modified_date = models.DateTimeField(default=timezone.now)
+    # This date changes every month to reset the total submission counter of a user.
+    last_rotation_date = models.DateTimeField(default=timezone.now)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -65,7 +67,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         for workspace in workspaces_qs:
             forms_qs = workspace.forms.all()
             for form in forms_qs:
-                total_submisssions += form.submissions.all().count()
+                total_submisssions += form.submissions.filter(
+                    created_date__gte=self.last_rotation_date).count()
         return total_submisssions
 
     def __str__(self):

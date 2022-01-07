@@ -15,7 +15,7 @@ urlpatterns = [
          name='stripe-checkout-session'),
     path("create-customer-portal/<int:user_pk>/",
          CreateCustomerPortalView.as_view(), name='customer-portal'),
-    path('webhooks/create-checkout-session/',
+    path('webhook/create-checkout-session/',
          CheckoutWebhookView.as_view(), name='checkout-webhook')
 ]
 
