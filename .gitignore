@@ -115,6 +115,7 @@ celerybeat-schedule.db
 *.sage.py
 
 # Environments
+dropform/.env
 .env
 .venv
 env/
