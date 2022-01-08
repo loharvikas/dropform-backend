@@ -13,11 +13,8 @@ from .models import User
 from helper.utils import account_activation_token
 from helper import constants
 import stripe
-import environ
 import json
 
-env = environ.Env()
-environ.Env.read_env()
 
 User = get_user_model()
 

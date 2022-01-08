@@ -1,19 +1,14 @@
 import os
-import environ
 from datetime import timedelta
 from celery.schedules import crontab
+from django.core.management.utils import get_random_secret_key
 
-env = environ.Env()
-# reading .env file
-environ.Env.read_env()
+DEVELOPMENT_MODE = os.getenv('DEVELOPMENT_MODE', 'True') == 'True'
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', get_random_secret_key())
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY", None)
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
@@ -80,16 +75,25 @@ CHANNEL_LAYERS = {"default": {
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": env("DB_NAME"),
-        "USER": env("DB_USER"),
-        "PASSWORD": env("DB_PASSWORD"),
-        "HOST": env("DB_HOST"),
-        "PORT": env("DB_PORT"),
+if not DEVELOPMENT_MODE:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            "NAME": os.getenv("DB_NAME"),
+            "USER": os.getenv("DB_USER"),
+            "PASSWORD": os.getenv("DB_PASSWORD"),
+            "HOST": os.getenv("DB_HOST"),
+            "PORT": os.getenv("DB_PORT"),
+            }
     }
-}
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR + "/db.sqlite3",
+        }
+    }
 
 REST_FRAMEWORK = {
     "DEFAULT_PARSER_CLASSES": [
@@ -148,7 +152,7 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": False,
     "ALGORITHM": "HS256",
-    "SIGNING_KEY": env("SECRET_KEY"),
+    "SIGNING_KEY": SECRET_KEY,
     "VERIFYING_KEY": None,
     "AUDIENCE": None,
     "ISSUER": None,
@@ -167,30 +171,40 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
 
-# AWS S3 CONFIGURATIONS
-AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
-AWS_S3_CUSTOM_DOMAIN = "%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
-AWS_S3_OBJECT_PARAMETERS = {
-    "CacheControl": "max-age=86400",
-}
-AWS_S3_SIGNATURE_VERSION = "s3v4"
-AWS_S3_OBJECT_PARAMETERS = {
-    "CacheControl": "max-age=86400",
-}
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-AWS_S3_VERIFY = True
-AWS_LOCATION = "static"
-
-DEFAULT_FILE_STORAGE = "dropform.storage_backends.MediaStorage"
-STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
-
-# MEDIA
+# MEDIA AND STATIC
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
+STATIC_URL = "/static/"
+
+if not DEVELOPMENT_MODE:
+    # AWS S3 CONFIGURATIONS
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+    AWS_S3_CUSTOM_DOMAIN = "%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
+    AWS_S3_OBJECT_PARAMETERS = {
+        "CacheControl": "max-age=86400",
+    }
+    AWS_S3_SIGNATURE_VERSION = "s3v4"
+    AWS_S3_OBJECT_PARAMETERS = {
+        "CacheControl": "max-age=86400",
+    }
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = None
+    AWS_S3_VERIFY = True
+    AWS_LOCATION = "static"
+
+    DEFAULT_FILE_STORAGE = "dropform.storage_backends.MediaStorage"
+    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
+
+    # EMAIL CONFIGURATIONS
+    EMAIL_HOST = os.getenv("EMAIL_HOST")
+    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+    EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
+    EMAIL_PORT = os.getenv("EMAIL_PORT")
+    DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
 
 # USER
@@ -205,13 +219,6 @@ CORS_ALLOWED_ORIGINS = [
 
 ]
 
-# EMAIL CONFIGURATIONS
-EMAIL_HOST = env("EMAIL_HOST")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-EMAIL_USE_TLS = env("EMAIL_USE_TLS")
-EMAIL_PORT = env("EMAIL_PORT")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 
 # CELERY CONFIGURATIONS
 CELERY_BROKER_URL = 'redis://localhost:6379'
@@ -228,8 +235,8 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 # STRIPE CONFIGURATIONS
-STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
-STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
-STRIPE_PRODUCT_STANDARD_ID = env('STRIPE_PRODUCT_STANDARD_ID')
-STRIPE_PRODUCT_PRO_ID = env('STRIPE_PRODUCT_PRO_ID')
-STRIPE_PRODUCT_BUSINESS_ID = env('STRIPE_PRODUCT_BUSINESS_ID')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
+STRIPE_PRODUCT_STANDARD_ID = os.getenv('STRIPE_PRODUCT_STANDARD_ID')
+STRIPE_PRODUCT_PRO_ID = os.getenv('STRIPE_PRODUCT_PRO_ID')
+STRIPE_PRODUCT_BUSINESS_ID = os.getenv('STRIPE_PRODUCT_BUSINESS_ID')
