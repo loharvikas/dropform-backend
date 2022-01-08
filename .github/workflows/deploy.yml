@@ -33,4 +33,3 @@ jobs:
         KEY: ${{ secrets.SSHKEY }}
         script: |
           pwd
-          python3 manage.py makemigrations
