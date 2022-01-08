@@ -23,3 +23,14 @@ jobs:
       with:
         source: "."
         target: "dropform-backend"
+    
+    - name: Executing remote command
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        USERNAME: ${{ secrets.USERNAME }}
+        PORT: ${{ secrets.PORT }}
+        KEY: ${{ secrets.SSHKEY }}
+        script: |
+          pwd
+          python3 manage.py makemigrations
