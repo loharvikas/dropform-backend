@@ -9,10 +9,12 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', get_random_secret_key())
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+if not DEVELOPMENT_MODE:
+    ALLOWED_HOSTS = ['www.dropform.co', 'api.dropform.co', '172.105.57.158']
+else:
+    ALLOWED_HOSTS = ['*']
+
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
-
-ALLOWED_HOSTS = ['www.dropform.co', 'api.dropform.co', '172.105.57.158']
-
 
 # Application definition
 
@@ -34,6 +36,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "corsheaders",
     "channels",
+    "storages"
 ]
 
 MIDDLEWARE = [
@@ -64,7 +67,6 @@ TEMPLATES = [
         },
     },
 ]
-
 WSGI_APPLICATION = "dropform.wsgi.application"
 ASGI_APPLICATION = "dropform.asgi.application"
 
@@ -171,33 +173,7 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
 
-# MEDIA AND STATIC
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
-STATIC_URL = "/static/"
-
 if not DEVELOPMENT_MODE:
-    # AWS S3 CONFIGURATIONS
-    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-    AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
-    AWS_S3_CUSTOM_DOMAIN = "%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
-    AWS_S3_OBJECT_PARAMETERS = {
-        "CacheControl": "max-age=86400",
-    }
-    AWS_S3_SIGNATURE_VERSION = "s3v4"
-    AWS_S3_OBJECT_PARAMETERS = {
-        "CacheControl": "max-age=86400",
-    }
-    AWS_S3_FILE_OVERWRITE = False
-    AWS_DEFAULT_ACL = None
-    AWS_S3_VERIFY = True
-    AWS_LOCATION = "static"
-
-    DEFAULT_FILE_STORAGE = "dropform.storage_backends.MediaStorage"
-    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
-
     # EMAIL CONFIGURATIONS
     EMAIL_HOST = os.getenv("EMAIL_HOST")
     EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
@@ -205,6 +181,30 @@ if not DEVELOPMENT_MODE:
     EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
     EMAIL_PORT = os.getenv("EMAIL_PORT")
     DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+
+# AWS AND STATIC FILES CONFIG
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_CUSTOM_DOMAIN = "%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": "max-age=86400",
+}
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": "max-age=86400",
+}
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_VERIFY = True
+AWS_LOCATION = "static"
+DEFAULT_FILE_STORAGE = "dropform.storage_backends.MediaStorage"
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
+STATIC_ROOT = 'static'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
 
 
 # USER
@@ -217,7 +217,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
 ]
-
 
 # CELERY CONFIGURATIONS
 CELERY_BROKER_URL = 'redis://localhost:6379'
