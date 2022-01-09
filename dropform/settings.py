@@ -86,7 +86,7 @@ if not DEVELOPMENT_MODE:
             "PASSWORD": os.getenv("DB_PASSWORD"),
             "HOST": os.getenv("DB_HOST"),
             "PORT": os.getenv("DB_PORT"),
-            }
+        }
     }
 
 else:
@@ -217,6 +217,7 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
+    "http://dropform.co",
 ]
 
 # CELERY CONFIGURATIONS

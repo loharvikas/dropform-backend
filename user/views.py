@@ -90,7 +90,6 @@ class CheckoutWebhookView(View):
         payload = request.body
         sig_header = request.META['HTTP_STRIPE_SIGNATURE']
         event = None
-        print('PAYLOAD::', payload.decode('utf-8'))
         try:
             event = stripe.Webhook.construct_event(
                 payload, sig_header, endpoint_secret)
