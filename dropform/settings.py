@@ -183,9 +183,9 @@ if not DEVELOPMENT_MODE:
     DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
 # AWS AND STATIC FILES CONFIG
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID").strip('$')
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY").strip('$')
-AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME").strip('$')
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", '').strip('$')
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", '').strip('$')
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME", '').strip('$')
 AWS_S3_CUSTOM_DOMAIN = "%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
     "CacheControl": "max-age=86400",
@@ -211,14 +211,17 @@ MEDIA_URL = "/media/"
 # USER
 AUTH_USER_MODEL = "user.User"
 
-# CORS CONFIGURATIONS
+# SECURITY CONFIGURATIONS
 CORS_ALLOW_ALL_ORIGINS: False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
-    "http://www.dropform.co",
+    "https://www.dropform.co",
 ]
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = ['https://api.dropform.co', 'https://dropform.co']
 
 # CELERY CONFIGURATIONS
 CELERY_BROKER_URL = 'redis://localhost:6379'
@@ -235,8 +238,10 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 # STRIPE CONFIGURATIONS
-STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY').strip('$')
-STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY').strip('$')
-STRIPE_PRODUCT_STANDARD_ID = os.getenv('STRIPE_PRODUCT_STANDARD_ID').strip('$')
-STRIPE_PRODUCT_PRO_ID = os.getenv('STRIPE_PRODUCT_PRO_ID').strip('$')
-STRIPE_PRODUCT_BUSINESS_ID = os.getenv('STRIPE_PRODUCT_BUSINESS_ID').strip('$')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '').strip('$')
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '').strip('$')
+STRIPE_PRODUCT_STANDARD_ID = os.getenv(
+    'STRIPE_PRODUCT_STANDARD_ID', '').strip('$')
+STRIPE_PRODUCT_PRO_ID = os.getenv('STRIPE_PRODUCT_PRO_ID', '').strip('$')
+STRIPE_PRODUCT_BUSINESS_ID = os.getenv(
+    'STRIPE_PRODUCT_BUSINESS_ID', '').strip('$')
