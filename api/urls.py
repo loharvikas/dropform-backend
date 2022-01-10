@@ -5,21 +5,18 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (
     ActivateEmailAPIView,
     FormDetailAPIView,
-    FormWorkspaceAPIView,
     GoogleLoginAPIView,
     LoginAPIView,
     PasswordChangeAPIView,
     RegisterAPIView,
     SubmissionDetailAPIView,
-    SubmissionListAPIView,
+    SubmissionAPIView,
     SubscriberListAPIView,
-    SubmissionFormAPIView,
     UserListAPIView,
     UserDetailAPIView,
     UserUpdateAPIView,
     WorkspaceListAPIView,
     WorkspaceDetailAPIView,
-    WorkspaceUserListAPIView,
     FormListAPIView,
 )
 
@@ -27,10 +24,11 @@ from .views import (
 urlpatterns = [
     path("subscribers/", SubscriberListAPIView.as_view(), name="form"),
     path("forms/", FormListAPIView.as_view(), name="form"),
-    path("forms/<int:pk>/", FormWorkspaceAPIView.as_view(), name="form-workspace"),
-    path("forms/detail/<uuid:uuid>/", FormDetailAPIView.as_view(), name="form-detail"),
-    path("f/<uuid:uuid>/", SubmissionFormAPIView.as_view(), name="create-submission"),
-    path("submissions/", SubmissionListAPIView.as_view(), name="submission"),
+    path("forms/<int:pk>/", FormListAPIView.as_view(), name="form-workspace"),
+    path("forms/detail/<uuid:uuid>/",
+         FormDetailAPIView.as_view(), name="form-detail"),
+    path("f/<uuid:uuid>/", SubmissionAPIView.as_view(), name="create-submission"),
+    path("submissions/", SubmissionAPIView.as_view(), name="submission"),
     path(
         "submissions/<int:pk>/",
         SubmissionDetailAPIView.as_view(),
@@ -39,7 +37,7 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("workspace/", WorkspaceListAPIView.as_view(), name="workspace"),
     path(
-        "workspace/<int:pk>/", WorkspaceUserListAPIView.as_view(), name="user-workspace"
+        "workspace/<int:pk>/", WorkspaceListAPIView.as_view(), name="user-workspace"
     ),
     path(
         "workspace/detail/<int:pk>/",

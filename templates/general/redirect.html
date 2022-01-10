@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thankyou!</title>
+  <title>Error</title>
   <meta charset="UTF-8" />
   <style type="text/css">
     body {
@@ -18,7 +18,7 @@
 
     .container {
       margin-top: 50px;
-      border: 1px solid lightgray;
+      border: 2px solid black;
       padding: 10px 20px;
       max-height: 300px;
       position: relative;
@@ -27,12 +27,14 @@
     }
 
     h1 {
-      font-size: 45px;
+      font-size: 30px;
     }
 
-    p {
-      font-size: 18px;
-      color: rgb(130, 130, 130);
+    .footer-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
     }
 
     .footer {
@@ -42,15 +44,16 @@
       bottom: 0;
       text-align: center;
       padding: 10px 0;
-      border-top: 2px solid lightgray;
-      background-color: rgb(39, 39, 97);
-      color: white;
+      border-top: 2px solid black;
+      background-color: rgb(166, 166, 233);
+      padding: 20px 0;
     }
 
     .brand {
-      text-decoration: un;
-      color: #fff;
+      text-decoration: none;
+      color: rgb(76, 0, 255);
       font-weight: bold;
+      margin-left: 10px;
     }
 
     .previous {
@@ -63,11 +66,20 @@
 <body>
   <div class="container">
     <section>
-      <h1>Thank you!</h1>
-      <p>Your form was submitted successfully!</p>
+      <svg width="70" height="70" viewBox="0 0 628 531" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 158.509L314 0V396.274L0 530.5V158.509Z" fill="#6C63FF" />
+        <path d="M314 0L628 135.404V524L314 396.146V0Z" fill="#4B4ACF" />
+      </svg>
+      <h1>Thank you.</h1>
+      <p>Your form was submitted successfully.</p>
       <a href="javascript:history.back()" class='previous'>Back to previous page</a>
       <div class="footer">
-        <p>Powered by <a href="#" class="brand">Dropform</a></p>
+        <div class='footer-section'>
+          Powered by
+          <a href="https://www.dropform.co" class="brand">
+            Dropform
+          </a>
+        </div>
       </div>
     </section>
   </div>

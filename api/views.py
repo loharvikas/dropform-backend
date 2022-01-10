@@ -49,9 +49,10 @@ class WorkspaceListAPIView(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class WorkspaceUserListAPIView(APIView):
     def get(self, request, pk, *args, **kwargs):
+        """
+            returns all the workspace associated with user.
+        """
         qs = Workspace.objects.all().filter(user__id=pk)
         serializer = serializers.WorkspaceSerializer(qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -66,7 +67,7 @@ class FormListAPIView(generics.ListCreateAPIView):
     queryset = Form.objects.all()
     serializer_class = serializers.FormSerializer
 
-    def post(request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         serializer = serializers.FormSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data.get("user", None)
@@ -83,11 +84,10 @@ class FormListAPIView(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class FormWorkspaceAPIView(APIView):
-    queryset = Form.objects.all()
-
     def get(self, request, pk, *args, **kwargs):
+        """
+            return all forms associated with its workspace instance.
+        """
         qs = Form.objects.all().filter(workspace__id=pk).order_by("-created_date")
         serializer = serializers.FormSerializer(qs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -99,14 +99,7 @@ class FormDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "uuid"
 
 
-class CustomPagination(PageNumberPagination):
-    page_size = 2
-    page_size_query_param = "page_size"
-    max_page_size = 50
-    page_query_param = "p"
-
-
-class SubmissionFormAPIView(generics.ListAPIView):
+class SubmissionAPIView(generics.ListCreateAPIView):
     queryset = Submission.objects.all()
     serializer_class = serializers.SubmissionSerializer
     parser_classes = [FormParser, MultiPartParser]
@@ -125,18 +118,15 @@ class SubmissionFormAPIView(generics.ListAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
+        """
+            returns all submissions associated with its form instance.
+        """
         qs = (
             Submission.objects.all()
             .filter(form__uuid=self.kwargs["uuid"])
             .order_by("-created_date")
         )
         return qs
-
-
-class SubmissionListAPIView(generics.GenericAPIView):
-    parser_classes = [FormParser, MultiPartParser]
-    queryset = Submission.objects.all()
-    serializer_class = serializers.SubmissionSerializer
 
 
 class SubmissionDetailAPIView(generics.DestroyAPIView):
