@@ -156,7 +156,6 @@ class SubmissionSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
-        print("VALIDATED_DATA", validated_data)
         return Submission.objects.create(**validated_data)
 
 

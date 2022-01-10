@@ -33,7 +33,7 @@ def create_stripe_customer(user_pk):
         logger.info('Stripe customer object created successfully!')
     except Exception as e:
         logger.error('Stripe customer object created successfully!')
-        print(e)
+        logger.error(e)
 
 
 @shared_task

@@ -13,7 +13,6 @@ from .models import User
 from helper.utils import account_activation_token
 from helper import constants
 import stripe
-import json
 
 
 User = get_user_model()
@@ -21,14 +20,14 @@ User = get_user_model()
 
 def activate_user(request, uidb64, token):
     try:
-        uuid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uuid)
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
     if user is not None and account_activation_token.check_token(user, token):
         user.is_verified = True
         user.save()
-        return redirect("http://localhost:3000")
+        return redirect("https://www.dropform.co")
     else:
         return HttpResponse("Activation link is invalid!")
 
@@ -63,7 +62,6 @@ class CreateCheckoutSessionView(View):
                 customer=user.stripe_customer_id
             )
         except Exception as e:
-            print('EEE;', e)
             return HttpResponse(status=400)
         return redirect(checkout_session.url, code=303)
 
@@ -94,11 +92,9 @@ class CheckoutWebhookView(View):
             event = stripe.Webhook.construct_event(
                 payload, sig_header, endpoint_secret)
         except ValueError as e:
-            print('INVALID PAYLOAD')
             # Invalid payload
             return HttpResponse(status=400)
         except stripe.error.SignatureVerificationError as e:
-            print('INVALID SIG')
             # Invalid signature
             return HttpResponse(status=400)
 

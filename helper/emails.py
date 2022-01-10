@@ -37,7 +37,7 @@ def send_activation_email(domain, user_pk):
         ],
     )
     email.attach_alternative(html_content, "text/html")
-    email.send(fail_silently=True)
+    email.send(fail_silently=False)
 
 
 def send_notification_email(submission_pk):

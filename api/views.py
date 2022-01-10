@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 
@@ -160,6 +161,8 @@ class GoogleLoginAPIView(APIView):
         serializer = serializers.GoogleAuthenticationSerializer(data=data)
         if serializer.is_valid():
             user = serializer.save()
+            user.is_verified = True
+            user.save()
             refresh = RefreshToken.for_user(user)
             return Response(
                 {
@@ -230,7 +233,6 @@ class UserUpdateAPIView(generics.UpdateAPIView):
 class ActivateEmailAPIView(APIView):
     def post(self, request, *args, **kwargs):
         current_site = get_current_site(request)
-
         if request.user.is_verified == False:
             send_activation_email_task.delay(
                 current_site.domain, request.user.pk)

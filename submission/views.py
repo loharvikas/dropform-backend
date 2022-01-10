@@ -25,7 +25,6 @@ class SubmissionCreation(View):
                 account_limitations = constants.ACCOUNT_LIMITATIONS[
                     user.account_type.capitalize()
                 ]
-                print('TOTAL:', user.total_submissions)
                 if account_limitations["total_submissions"] <= user.total_submissions:
                     return render(request, "general/error.html")
                 s = Submission.objects.create(form=form, fields=fields)
