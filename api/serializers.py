@@ -39,6 +39,8 @@ class UserSerializer(serializers.ModelSerializer):
             "password",
             "is_active",
             "is_verified",
+            "paid_user",
+            "account_type",
             "date_joined",
             "last_modified_date",
         ]
@@ -70,6 +72,8 @@ class RegisterSerializer(UserSerializer):
             "is_verified",
             "date_joined",
             "last_modified_date",
+            "paid_user",
+            "account_type"
         ]
 
     def create(self, validated_data):
@@ -96,7 +100,18 @@ class GoogleAuthenticationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = "__all__"
+        fields = [
+            "id",
+            "email",
+            "password",
+            "full_name",
+            "is_active",
+            "is_verified",
+            "date_joined",
+            "last_modified_date",
+            "paid_user",
+            "account_type"
+        ]
 
     def create(self, validated_data):
         try:
