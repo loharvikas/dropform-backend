@@ -36,6 +36,8 @@ def activate_user(request, uidb64, token):
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+host_url = 'localhost:3000' if settings.DEVELOPMENT_MODE == True else 'www.dropform.co'
+host_protocol = 'http' if settings.DEVELOPMENT_MODE == True else 'https'
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -60,8 +62,8 @@ class CreateCheckoutSessionView(View):
                     },
                 ],
                 mode='subscription',
-                success_url='http://localhost:3000',
-                cancel_url='http://localhost:3000',
+                success_url=f'{host_protocol}://{host_url}',
+                cancel_url=f'{host_protocol}://{host_url}',
                 customer=user.stripe_customer_id
             )
         except Exception as e:
@@ -76,7 +78,7 @@ class CreateCustomerPortalView(View):
         try:
             session = stripe.billing_portal.Session.create(
                 customer=user.stripe_customer_id,
-                return_url='http://localhost:3000',
+                return_url=f'{host_protocol}://{host_url}',
             )
         except Exception as e:
             return HttpResponse(status=400)
