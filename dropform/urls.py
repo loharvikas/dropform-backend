@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from submission.views import SubmissionCreation
-from user.views import CheckoutWebhookView, activate_user, CreateCheckoutSessionView, CreateCustomerPortalView
+from user.views import CheckoutWebhookView, CustomerPortalWebhookView, activate_user, CreateCheckoutSessionView, CreateCustomerPortalView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -16,7 +16,10 @@ urlpatterns = [
     path("create-customer-portal/<int:user_pk>/",
          CreateCustomerPortalView.as_view(), name='customer-portal'),
     path('webhook/create-checkout-session/',
-         CheckoutWebhookView.as_view(), name='checkout-webhook')
+         CheckoutWebhookView.as_view(), name='checkout-webhook'),
+    path('webhook/create-customer-portal/',
+         CustomerPortalWebhookView.as_view(), name='customer-portal-webhook')
+
 ]
 
 

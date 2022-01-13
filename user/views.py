@@ -1,3 +1,4 @@
+from pprint import pprint
 from django.http import HttpResponse
 from django.http.response import JsonResponse
 from django.shortcuts import redirect
@@ -8,6 +9,8 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.auth import get_user_model
+
+import json
 
 from .models import User
 from helper.utils import account_activation_token
@@ -57,8 +60,8 @@ class CreateCheckoutSessionView(View):
                     },
                 ],
                 mode='subscription',
-                success_url='http://127.0.0.1:3000',
-                cancel_url='http://127.0.0.1:3000',
+                success_url='http://localhost:3000',
+                cancel_url='http://localhost:3000',
                 customer=user.stripe_customer_id
             )
         except Exception as e:
@@ -73,7 +76,7 @@ class CreateCustomerPortalView(View):
         try:
             session = stripe.billing_portal.Session.create(
                 customer=user.stripe_customer_id,
-                return_url='http://127.0.0.1:3000',
+                return_url='http://localhost:3000',
             )
         except Exception as e:
             return HttpResponse(status=400)
@@ -84,13 +87,24 @@ class CreateCustomerPortalView(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class CheckoutWebhookView(View):
     def post(self, request, *args, **kwargs):
-        endpoint_secret = 'we_1KEwwoSBvjL8IfZ6fhDJyrAi'
-        payload = request.body
-        sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+        payload = json.loads(request.body)
         event = None
+        global account_type
+        account_type = None
         try:
-            event = stripe.Webhook.construct_event(
-                payload, sig_header, endpoint_secret)
+            event = stripe.Event.construct_from(
+                payload, stripe.api_key)
+            customer_id = event.data.object.customer
+            user = User.objects.get(stripe_customer_id=customer_id)
+            price_id = event.data.object.lines.data[0].price.id
+            if price_id == settings.STRIPE_PRODUCT_STANDARD_ID:
+                account_type = constants.ACCOUNT_STANDARD
+            elif price_id == settings.STRIPE_PRODUCT_BUSINESS_ID:
+                account_type = constants.ACCOUNT_BUSINESS
+            elif price_id == settings.STRIPE_PRODUCT_PRO_ID:
+                account_type = constants.ACCOUNT_PROFESSIONAL
+            else:
+                return HttpResponse(status=400)
         except ValueError as e:
             # Invalid payload
             return HttpResponse(status=400)
@@ -99,10 +113,65 @@ class CheckoutWebhookView(View):
             return HttpResponse(status=400)
 
         if event.type == 'checkout.session.completed':
-            print('Checkout success PaymentIntent was successful!')
+            print('Checkout success session completed')
         elif event.type == 'invoice.paid':
-            print('Invoice Failed was attached to a Customer!')
+            user.paid_user = True
+            user.account_type = account_type
+            user.save()
+        elif event.type == 'invoice.payment_failed':
+            user.paid_user = False
+            user.account_type = constants.ACCOUNT_TESTING
+            user.save()
+        elif event.type == 'invoice.payment_succeeded':
+            user.paid_user = True
+            user.account_type = account_type
+            user.save()
+        elif event.type == 'invoice.updated':
+            user.paid_user = True
+            user.account_type = account_type
+            user.save()
         else:
             print('Unhandled event type {}'.format(event.type))
 
+        return HttpResponse(status=200)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CustomerPortalWebhookView(View):
+    def post(self, request, *args, **kwargs):
+        payload = json.loads(request.body)
+        event = None
+        global account_type
+        account_type = None
+        try:
+            event = stripe.Event.construct_from(
+                payload, stripe.api_key)
+            pprint(event)
+            customer_id = event.data.object.customer
+            user = User.objects.get(stripe_customer_id=customer_id)
+            price_id = event.data.object['items'].data[0].price.id
+            if price_id == settings.STRIPE_PRODUCT_STANDARD_ID:
+                account_type = constants.ACCOUNT_STANDARD
+            elif price_id == settings.STRIPE_PRODUCT_BUSINESS_ID:
+                account_type = constants.ACCOUNT_BUSINESS
+            elif price_id == settings.STRIPE_PRODUCT_PRO_ID:
+                account_type = constants.ACCOUNT_PROFESSIONAL
+            else:
+                return HttpResponse(status=400)
+        except ValueError as e:
+            # Invalid payload
+            return HttpResponse(status=400)
+        except stripe.error.SignatureVerificationError as e:
+            # Invalid signature
+            return HttpResponse(status=400)
+
+        if event.type == 'customer.subscription.deleted':
+            user.paid_user = False
+            user.account_type = constants.ACCOUNT_TESTING
+            user.save()
+        elif event.type == 'customer.subscription.updated':
+            user.account_type = account_type
+            user.save()
+        else:
+            print('Unhandled event type {}'.format(event.type))
         return HttpResponse(status=200)
