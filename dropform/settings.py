@@ -207,7 +207,7 @@ STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
-
+APPEND_SLASH = False
 # USER
 AUTH_USER_MODEL = "user.User"
 
