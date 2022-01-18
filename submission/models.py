@@ -19,6 +19,7 @@ class Submission(models.Model):
 
 
 class SubmissionFileUpload(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True)
     file_field = models.FileField(blank=True, null=True)
     submission = models.ForeignKey(
         Submission, on_delete=models.CASCADE, related_name="files"

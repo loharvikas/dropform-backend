@@ -10,8 +10,9 @@ channel_layer = get_channel_layer()
 
 @receiver(post_save, sender=Submission)
 def handler(sender, instance, created, **kwargs):
-    if created:
+    if not created:
         serializer = SubmissionSerializer(instance)
+        files = instance.files.all()
         async_to_sync(channel_layer.group_send)(
             f"form_{instance.form.uuid}",
             {"type": "send_submission", "message": serializer.data},

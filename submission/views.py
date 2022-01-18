@@ -28,9 +28,12 @@ class SubmissionCreation(View):
                 if account_limitations["total_submissions"] <= user.total_submissions:
                     return render(request, "general/error.html")
                 s = Submission.objects.create(form=form, fields=fields)
-                for file in request.FILES.values():
-                    SubmissionFileUpload.objects.create(
-                        file_field=file, submission=s)
+                for name, file in request.FILES.items():
+                    SubmissionFileUpload.objects.create(name=name,
+                                                        file_field=file, submission=s)
+                    if user.account_type == constants.ACCOUNT_TESTING:
+                        break
+                s.save()
                 if form.alert == True:
                     send_notification_email_task.delay(s.pk)
                 if form.redirect_url:
