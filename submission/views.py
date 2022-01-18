@@ -1,5 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
@@ -33,8 +33,9 @@ class SubmissionCreation(View):
                         file_field=file, submission=s)
                 if form.alert == True:
                     send_notification_email_task.delay(s.pk)
+                if form.redirect_url:
+                    return redirect(form.redirect_url)
                 return render(request, "general/redirect.html")
             return HttpResponse("Error")
-
         except ObjectDoesNotExist:
             HttpResponse("Error")
