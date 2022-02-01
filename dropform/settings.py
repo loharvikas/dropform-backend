@@ -207,6 +207,7 @@ STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
+
 # USER
 AUTH_USER_MODEL = "user.User"
 
@@ -214,9 +215,10 @@ AUTH_USER_MODEL = "user.User"
 CORS_ALLOW_ALL_ORIGINS: False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000",
     "http://localhost:3000",
     "https://www.dropform.co",
+    "https://dropform.co",
+    "http://127.0.0.1:3000",
 ]
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
