@@ -118,16 +118,17 @@ class SubmissionAPIView(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get_queryset(self):
+    def get(self, request, uuid, *args, **kwargs):
         """
             returns all submissions associated with its form instance.
         """
         qs = (
             Submission.objects.all()
-            .filter(form__uuid=self.kwargs["uuid"])
+            .filter(form__uuid=uuid)
             .order_by("-created_date")
         )
-        return qs
+        serializer = serializers.SubmissionSerializer(qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class SubmissionDetailAPIView(generics.DestroyAPIView):

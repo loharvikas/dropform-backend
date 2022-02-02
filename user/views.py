@@ -148,7 +148,6 @@ class CustomerPortalWebhookView(View):
         try:
             event = stripe.Event.construct_from(
                 payload, stripe.api_key)
-            pprint(event)
             customer_id = event.data.object.customer
             user = User.objects.get(stripe_customer_id=customer_id)
             price_id = event.data.object['items'].data[0].price.id
@@ -175,5 +174,6 @@ class CustomerPortalWebhookView(View):
             user.account_type = account_type
             user.save()
         else:
+            print('CUSTOMER PORTAL')
             print('Unhandled event type {}'.format(event.type))
         return HttpResponse(status=200)
