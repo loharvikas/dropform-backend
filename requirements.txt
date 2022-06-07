@@ -60,6 +60,7 @@ six==1.16.0
 sqlparse==0.4.2
 srsly==2.4.1
 stripe==2.64.0
+supervisor==4.2.4
 toml==0.10.2
 Twisted==21.7.0
 txaio==21.2.1
