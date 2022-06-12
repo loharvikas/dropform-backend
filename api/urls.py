@@ -24,7 +24,7 @@ from .views import (
 urlpatterns = [
     path("subscribers/", SubscriberListAPIView.as_view(), name="form"),
     path("forms/", FormListAPIView.as_view(), name="form"),
-    path("forms/<int:pk>/", FormListAPIView.as_view(), name="form-workspace"),
+    path("forms/<int:pk>/", FormListAPIView.as_view(), name="form-retrieve"),
     path("forms/detail/<uuid:uuid>/",
          FormDetailAPIView.as_view(), name="form-detail"),
     path("f/<uuid:uuid>/", SubmissionAPIView.as_view(), name="create-submission"),

@@ -205,9 +205,8 @@ class RegisterAPIView(APIView):
 
 # Endpoint: /users/
 class UserListAPIView(generics.ListAPIView):
-    permission_classes = (AllowAny,)
     serializer_class = serializers.UserSerializer
-    model = User
+    queryset = User.objects.all()
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer_class(
@@ -220,7 +219,7 @@ class UserListAPIView(generics.ListAPIView):
 
 
 # Endpoint: /users/pk/
-class UserDetailAPIView(generics.RetrieveAPIView):
+class UserDetailAPIView(generics.RetrieveDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
 
@@ -232,6 +231,10 @@ class UserUpdateAPIView(generics.UpdateAPIView):
 
 
 class ActivateEmailAPIView(APIView):
+    """
+        This view will sent email for verifying user's email.
+    """
+
     def post(self, request, *args, **kwargs):
         current_site = get_current_site(request)
         if request.user.is_verified == False:
@@ -246,6 +249,9 @@ class ActivateEmailAPIView(APIView):
 
 
 class PasswordChangeAPIView(generics.UpdateAPIView):
+    """
+        API View to change user's password.
+    """
     serializer_class = serializers.PasswordChangeSerializer
     model = User
 

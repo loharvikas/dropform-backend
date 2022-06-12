@@ -19,7 +19,6 @@ urlpatterns = [
          CheckoutWebhookView.as_view(), name='checkout-webhook'),
     path('webhook/create-customer-portal/',
          CustomerPortalWebhookView.as_view(), name='customer-portal-webhook')
-
 ]
 
 

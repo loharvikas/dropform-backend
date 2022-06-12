@@ -6,6 +6,10 @@ from helper import constants
 
 from .managers import UserManager
 
+payload = {
+
+}
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     ACCOUNT_TYPE_CHOICES = (
@@ -52,7 +56,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         returns total forms associated with user instance.
         """
         total_forms = 0
-        workspaces_qs = self.workspaces.all()
+        workspaces_qs = self.workspaces.prefetch_related('forms').all()
         for workspace in workspaces_qs:
             total_forms += workspace.forms.all().count()
         return total_forms
@@ -63,9 +67,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         returns total submissions associated with user instance.
         """
         total_submisssions = 0
-        workspaces_qs = self.workspaces.all()
+        workspaces_qs = self.workspaces.prefetch_related('forms').all()
         for workspace in workspaces_qs:
-            forms_qs = workspace.forms.all()
+            forms_qs = workspace.forms.prefetch_related('submissions').all()
             for form in forms_qs:
                 total_submisssions += form.submissions.filter(
                     created_date__gte=self.last_rotation_date).count()
