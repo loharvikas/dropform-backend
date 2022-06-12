@@ -14,6 +14,13 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.9.13
+    - uses: shogo82148/actions-setup-redis@v1
+      with:
+        redis-version: '6.x'
+        redis-port: "0"
+        redis-tls-port: "6379"
+
+    - run: redis-cli ping
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
