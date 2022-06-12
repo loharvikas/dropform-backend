@@ -11,7 +11,7 @@ from form.models import Form
 
 
 FORM_URL = reverse("form")
-# FORM_LIST_URL = reverse("form-retrieve")
+# FORM_LIST_URL = reverse("form-retrieve")s
 
 
 def form_uuid_url(i):
