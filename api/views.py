@@ -205,9 +205,8 @@ class RegisterAPIView(APIView):
 
 # Endpoint: /users/
 class UserListAPIView(generics.ListAPIView):
-    permission_classes = (AllowAny,)
     serializer_class = serializers.UserSerializer
-    model = User
+    queryset = User.objects.all()
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer_class(
@@ -220,7 +219,7 @@ class UserListAPIView(generics.ListAPIView):
 
 
 # Endpoint: /users/pk/
-class UserDetailAPIView(generics.RetrieveAPIView):
+class UserDetailAPIView(generics.RetrieveDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
 
